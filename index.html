@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rainbow Mazes</title>
+<style>
+  html {
+    height: 100%;
+    width: 100%;
+    font-size: 18px;
+    background: black;
+    color: white;
+    font-family: sans-serif;
+    line-height: 1.4;
+  }
+  body {
+    min-height: 100%;
+    width: 100%;
+    display: flex;
+    margin: 0;
+  }
+  .settings-column {
+    flex-shrink: 0;
+    width: 18em;
+    background: #333;
+    padding: 1em;
+    box-sizing: border-box;
+    position: relative;
+  }
+  .display-column {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center; align-items: center;
+    overflow: hidden;
+    height: 100vh;
+    position: fixed;
+    left: 18em;
+    right: 0;
+  }
+  h1, h2 {
+    font-size: inherit;
+    font-weight: inherit;
+    opacity: 0.75;
+    text-align: center;
+  }
+  input[type="range"] {
+    display: block;
+    width: 100%;
+  }
+  input[type="number"] {
+    width: 5em;
+  }
+  .group {
+    display: block;
+    margin-top: 1em;
+  }
+  canvas {
+    object-fit: contain;
+    max-width: 100%;
+    max-height: 100%;
+  }
+  a {
+    color: #7fd;
+  }
+  
+  .tooltip {
+    position: relative;
+    display: inline-block;
+    border: 1px solid #AAA;
+    color: #AAA;
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+    cursor: help;
+    padding: 0;
+    font: inherit;
+    line-height: 1.1;
+    background: none;
+    -webkit-appearance: none;
+    appearance: none;
+    box-sizing: content-box;
+  }
+  .tooltip::before {
+    content: "?";
+  }
+
+  .tooltip .tooltiptext {
+    width: 20em;
+    background-color: #CCC;
+    color: black;
+    text-align: left;
+    line-height: 1.3;
+    border-radius: 6px;
+    padding: 0.5em 0.5em;
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 150%;
+    transform: translateY(-50%);
+    box-shadow: 2px 6px 10px rgba(0,0,0,0.5);
+  }
+
+  .tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent #CCC transparent transparent;
+  }
+  .tooltip:not(:hover):not(:focus) .tooltiptext {
+    display: none;
+  }
+  
+  .drawer-tab {
+    height: 3em;
+    width: 1.5em;
+    background: #333;
+    border-radius: 0 1.5em 1.5em 0;
+    position: fixed;
+    top: 20px;
+    left: 18em;
+    cursor: pointer;
+    border: none;
+    padding: none;
+    margin: none;
+    font: inherit;
+    color: inherit;
+  }
+  .drawer-tab::before {
+    content: "◄";
+    margin-left: -0.5em;
+  }
+  .closed-drawer .drawer-tab {
+    left: 0;
+  }
+  .closed-drawer .drawer-tab::before {
+    content: "►";
+  }
+  
+  input[type="text"], input[type="number"] {
+    font: inherit;
+    padding: 0 0.2em;
+    border: none;
+  }
+  button, select {
+    -webkit-appearance: none;
+    appearance: none;
+    font: inherit;
+    padding: 0 0.45em;
+    background: #ccc;
+    border-radius: .4em;
+    border: none;
+  }
+  
+  select {
+    padding-right: 1.5em;
+  }
+  select + .select-arrows::before {
+    content: "▾";
+    color: black;
+    margin-left: -1em;
+    pointer-events: none;
+    position: absolute;
+  }
+
+  @media screen and (min-width: 601px) {
+    .closed-drawer .settings-column {
+      margin-left: -18em;
+    }
+    .closed-drawer .display-column {
+      left: 0;
+    }
+  }
+  @media screen and (max-width: 600px) {
+    html {
+      height: auto;
+    }
+    body {
+      //flex-direction: column;
+      //overflow: auto;
+    }
+    .settings-column {
+      width: 100vw;
+      top: 100vw;
+    }
+    .display-column {
+      width: 100vw;
+      height: 100vw;
+      left: initial;
+      right: initial;
+      z-index: 1;
+      background: black;
+    }
+    
+    .tooltip .tooltiptext {
+      width: 11em;
+      top: initial;
+      right: initial;
+      bottom: 150%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .tooltip .tooltiptext::after {
+      left: 50%;
+      top: 100%;
+      bottom: initial;
+      margin-left: -5px;
+      margin-top: initial;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #CCC transparent transparent transparent;
+    }
+    
+    .drawer-tab {
+      display: none;
+    }
+    
+    .group:focus-within {
+      z-index: 1;
+      position: relative;
+      background: #333;
+    }
+  }
+  
+  input[type=range] {
+    height: 2em;
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 3px 0;
+    width: 100%;
+    background: transparent;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: .5em;
+    background: #ccc;
+    border-radius: .25em;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    height: 2em;
+    width: 1em;
+    border-radius: .4em;
+    background: white;
+    -webkit-appearance: none;
+    margin-top: -.75em;
+  }
+
+  input[type=range]::-moz-range-track {
+    width: 100%;
+    height: .5em;
+    background: #ccc;
+    border-radius: .25em;
+  }
+  input[type=range]::-moz-range-thumb {
+    height: 2em;
+    width: 1em;
+    border-radius: .4em;
+    background: white;
+  }
+  input[type=range]::-ms-track {
+    width: 100%;
+    height: .5em;
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+  }
+  input[type=range]::-ms-fill-lower, input[type=range]::-ms-fill-upper {
+    background: #ccc;
+    border-radius: .25em;
+  }
+  input[type=range]::-ms-thumb {
+    height: 2em;
+    width: 1em;
+    border-radius: .4em;
+    background: white;
+  }
+</style>
+
+<div class="display-column">
+  <canvas id="canvas" width="800" height="800"></canvas>
+</div>
+
+<div class="settings-column">
+  <h1>john nesky's maze maker</h1>
+  <button type="button" class="drawer-tab" id="drawerTab" aria-label="Toggle sidebar"></button>
+  <form id="mazeSettingsForm">
+    <input type="hidden" name="version" value="1"/>
+    <div class="group">
+      <div>
+        random seed:
+        <button type="button" class="tooltip" aria-label="Display tooltip">
+          <span class="tooltiptext">Determines the outcome of the algorithm's random choices. You can regenerate the same maze if the seed and other settings are preserved, or generate a new maze with the same settings by changing the seed.</span>
+        </button>
+      </div>
+      <input type="number" name="randomSeed" id="randomSeed" min="0" max="10000000" step="1" value="1234567"/>
+      <button type="button" id="randomSeedButton">generate new maze</button>
+    </div>
+    <div class="group">
+      <div>
+        animation controls:
+        <button type="button" class="tooltip" aria-label="Display tooltip">
+          <span class="tooltiptext">The maze generation algorithm can be paused, reset, or incrementally advanced.<br/>Keyboard shortcuts:<br/>R=reset <br/>Space=play/pause<br/>S = step</span>
+        </button>
+      </div>
+      <button type="button" id="resetButton">reset</button>
+      <button type="button" id="playButton">play/pause</button>
+      <button type="button" id="stepButton">step</button>
+    </div>
+    <div class="group">
+      <div>
+        animation rate:
+        <button type="button" class="tooltip" aria-label="Display tooltip">
+          <span class="tooltiptext">How fast the maze algorithm adds cells to the maze. Drag all the way to the right to instantly finish the maze.</span>
+        </button>
+      </div>
+      <input type="range" name="animationRate" min="0" max="1" step="0.01" value="0.7"/>
+    </div>
+    <div class="group">
+      <div>
+        slide show rate:
+        <button type="button" class="tooltip" aria-label="Display tooltip">
+          <span class="tooltiptext">Periodically generates new mazes by changing the random seed. Waits a certain amount of time after completing the last maze before starting the next one based on this slider. Drag all the way to the left to stop the slideshow.</span>
+        </button>
+      </div>
+      <input type="range" name="slideShowRate" min="0" max="1" step="0.01" value="0"/>
+    </div>
+    <div class="group">
+      <div>
+        presets:
+        <button type="button" class="tooltip" aria-label="Display tooltip">
+          <span class="tooltiptext">Check out some maze configurations selected by the developer.</span>
+        </button>
+      </div>
+      <select id="presetMenu">
+        <option selected disabled>custom</option>
+        <option value="#gridWidth=32&gridHeight=32&maxCells=9999&cellSize=16&wallSize=4&hueShift=0.5&hueType=traversableDistance&lightness=1&forkChance=0.1&turnBias=0.11&onCollision=differentDirection&forkRange=1&up=1&down=1&left=1&right=1">classic maze</option>
+        <option value="#gridWidth=64&gridHeight=64&maxCells=9999&cellSize=9&wallSize=1&hueShift=0.27&hueType=traversableDistance&lightness=0.74&forkChance=0&turnBias=0.01&onCollision=differentDirection&forkRange=0&up=1&down=1&left=1&right=1">vortex panels</option>
+        <option value="#gridWidth=128&gridHeight=128&maxCells=1000&cellSize=6&wallSize=2&hueShift=0.17&hueType=cellCreationOrder&lightness=0.75&forkChance=0.17&turnBias=0.18&onCollision=differentCell&forkRange=0.17&up=0.59&down=0.59&left=1&right=1">metroidvania</option>
+        <option value="#gridWidth=64&gridHeight=64&maxCells=9999&cellSize=9&wallSize=1&hueShift=0.3&hueType=traversableDistance&lightness=0.75&forkChance=0&turnBias=0.05&onCollision=differentCell&forkRange=0&up=0.51&down=0.61&left=1&right=1">greebles</option>
+        <option value="#gridWidth=64&gridHeight=64&maxCells=9999&cellSize=9&wallSize=1&hueShift=0.19&hueType=traversableDistance&lightness=0.75&forkChance=0.01&turnBias=0.01&onCollision=differentDirection&forkRange=0.01&up=0.01&down=1&left=0.01&right=1">linen closet</option>
+        <option value="#gridWidth=64&gridHeight=64&maxCells=9999&cellSize=9&wallSize=1&hueShift=0.14&hueType=traversableDistance&lightness=0.75&forkChance=0.97&turnBias=0.01&onCollision=differentDirection&forkRange=0.01&up=0.01&down=1&left=0.01&right=1">meteor shower</option>
+        <option value="#gridWidth=64&gridHeight=64&maxCells=9999&cellSize=9&wallSize=1&hueShift=0.33&hueType=traversableDistance&lightness=0.75&forkChance=0.02&turnBias=0.04&onCollision=differentDirection&forkRange=0.34&up=0.01&down=1&left=0.35&right=1">collage</option>
+        <option value="#gridWidth=64&gridHeight=64&maxCells=99999&cellSize=9&wallSize=0&hueShift=0.43&hueType=traversableDistance&lightness=0.75&forkChance=0.56&turnBias=0.99&onCollision=differentCell&forkRange=0.52&up=0.01&down=1&left=0.56&right=0.56">cityscape</option>
+        <option value="#gridWidth=64&gridHeight=64&maxCells=9999&cellSize=10&wallSize=0&hueShift=0.35&hueType=traversableDistance&lightness=0.69&forkChance=0.5&turnBias=0.33&onCollision=differentCell&forkRange=0.48&up=1&down=1&left=1&right=1">impressionistic clouds</option>
+        <option value="#gridWidth=64&gridHeight=64&maxCells=9999&cellSize=9&wallSize=1&hueShift=0.35&hueType=traversableDistance&lightness=0.71&forkChance=0&turnBias=0.99&onCollision=differentCell&forkRange=0&up=1&down=1&left=1&right=1">wiggles</option>
+        <option value="#gridWidth=64&gridHeight=64&maxCells=999&cellSize=9&wallSize=1&hueShift=0.35&hueType=traversableDistance&lightness=0.71&forkChance=0.04&turnBias=0.01&onCollision=differentCell&forkRange=0.08&up=1&down=1&left=1&right=1">floor plan</option>
+        <option value="#gridWidth=64&gridHeight=64&maxCells=2000&cellSize=9&wallSize=1&hueShift=0.35&hueType=traversableDistance&lightness=0.71&forkChance=0.17&turnBias=0.01&onCollision=differentDirection&forkRange=0.12&up=1&down=1&left=1&right=1">under construction</option>
+        <option value="#gridWidth=64&gridHeight=64&maxCells=500&cellSize=9&wallSize=1&hueShift=0.25&hueType=traversableDistance&lightness=0.74&forkChance=0.04&turnBias=0.52&onCollision=differentCell&forkRange=0.62&up=0.03&down=1&left=0.25&right=0.84">lightning</option>
+        <option value="#gridWidth=64&gridHeight=64&maxCells=9999&cellSize=10&wallSize=0&hueShift=0.13&hueType=traversableDistance&lightness=0.74&forkChance=0.98&turnBias=0.42&onCollision=differentDirection&forkRange=0&up=1&down=0.01&left=0.21&right=0.21">cumulus</option>
+        <option value="#gridWidth=64&gridHeight=64&maxCells=9999&cellSize=10&wallSize=0&hueShift=0.06&hueType=cellCreationOrder&lightness=0.73&forkChance=0.05&turnBias=0.99&onCollision=differentDirection&forkRange=1&up=0.52&down=0.01&left=1&right=1">tree</option>
+        <option value="#gridWidth=64&gridHeight=64&maxCells=9999&cellSize=10&wallSize=0&hueShift=0.14&hueType=traversableDistance&lightness=0.65&forkChance=1&turnBias=0.99&onCollision=differentDirection&forkRange=1&up=0.52&down=0.01&left=1&right=1">emerald city</option>
+        <option value="#gridWidth=128&gridHeight=128&maxCells=99999&cellSize=10&wallSize=0&hueShift=0.13&hueType=traversableDistance&lightness=0.63&forkChance=1&turnBias=0.01&onCollision=differentDirection&forkRange=1&up=1&down=1&left=1&right=1">bismuth</option>
+        <option value="#gridWidth=64&gridHeight=32&maxCells=500&cellSize=6&wallSize=4&hueShift=0.14&hueType=cellCreationOrder&lightness=0.68&forkChance=0.08&turnBias=0.64&onCollision=differentCell&forkRange=0.18&up=0.12&down=0.82&left=1&right=1">ant colony</option>
+        <option value="#gridWidth=64&gridHeight=64&maxCells=2000&cellSize=9&wallSize=1&hueShift=0.07&hueType=cellCreationOrder&lightness=0.75&forkChance=0.08&turnBias=0.01&onCollision=differentCell&forkRange=0&up=1&down=1&left=1&right=1">windows</option>
+      </select><span class="select-arrows"></span>
+      
+      
+
+    </div>
+    <div class="group">
+      <div>
+        max grid width/height:
+        <button type="button" class="tooltip" aria-label="Display tooltip">
+          <span class="tooltiptext">The maximum number cells across and down the maze. The maze may be smaller if not enough cells were added.</span>
+        </button>
+      </div>
+      <input type="number" name="gridWidth" min="0" max="10000" step="1" value="32"/>
+      <input type="number" name="gridHeight" min="0" max="10000" step="1" value="32"/>
+    </div>
+    <div class="group">
+      <div>
+        max cell count:
+        <button type="button" class="tooltip" aria-label="Display tooltip">
+          <span class="tooltiptext">The maximum number cells to add to the maze. If this is larger than width ✕ height, then the maze will be completely filled.</span>
+        </button>
+      </div>
+      <input type="number" name="maxCells" min="0" max="100000" step="1" value="9999"/>
+    </div>
+    <div class="group">
+      <div>
+        cell/wall pixel size:
+        <button type="button" class="tooltip" aria-label="Display tooltip">
+          <span class="tooltiptext">The number of pixels across to draw cell interiors and walls.</span>
+        </button>
+      </div>
+      <input type="number" name="cellSize" min="0" max="64" step="1" value="18"/>
+      <input type="number" name="wallSize" min="0" max="32" step="1" value="2"/>
+    </div>
+    <div class="group">
+      <div>
+        hue shift rate:
+        <button type="button" class="tooltip" aria-label="Display tooltip">
+          <span class="tooltiptext">Each cell's interior color is slightly hue-shifted by this much from the previous cell, forming a rainbow based on distance from the inital cell.</span>
+        </button>
+      </div>
+      <input type="range" name="hueShift" min="0" max="1" step="0.01" value=".5"/>
+    </div>
+    <div class="group">
+      <div>
+        hue shift type:
+        <button type="button" class="tooltip" aria-label="Display tooltip">
+          <span class="tooltiptext">Determines how cells are shaded, either based on traversable distance from the seed node, or the order in which the cells were created.</span>
+        </button>
+      </div>
+      <select name="hueType">
+        <option value="traversableDistance" selected>traversable distance</option>
+        <option value="cellCreationOrder">cell creation order</option>
+      </select><span class="select-arrows"></span>
+    </div>
+    <div class="group">
+      <div>
+        lightness:
+        <button type="button" class="tooltip" aria-label="Display tooltip">
+          <span class="tooltiptext">The lightness of each cell interior, ranging from black to colorful to white.</span>
+        </button>
+      </div>
+      <input type="range" name="lightness" min="0" max="1" step="0.01" value=".75"/>
+    </div>
+    <div class="group">
+      <div>
+        extend vs fork probability:
+        <button type="button" class="tooltip" aria-label="Display tooltip">
+          <span class="tooltiptext">Every time the maze generation algorithm is ready to add another cell, it randomly chooses to extend the most recently added dead-end, or fork off from a previous path, based on this setting. The left end of the slider creates long hallways, and the middle and right end create many short dead-ends.</span>
+        </button>
+      </div>
+      <input type="range" name="forkChance" min="0" max="1" step="0.01" value="0.1"/>
+    </div>
+    <div class="group">
+      <div>
+        extend turn bias:
+        <button type="button" class="tooltip" aria-label="Display tooltip">
+          <span class="tooltiptext">The maze generation algorithm can prefer to form straight lines or tight squiggles based on this setting. (This has no effect while the algorithm is forking a path.)</span>
+        </button>
+      </div>
+      <input type="range" name="turnBias" min="0.01" max="0.99" step="0.01" value="0.15"/>
+    </div>
+    <div class="group">
+      <div>
+        on collision, try a different:
+        <button type="button" class="tooltip" aria-label="Display tooltip">
+          <span class="tooltiptext">
+          If the algorithm tries to grow from a cell toward a space that is already occupied, it has to stop and try something else. It can either try a different space next to the same cell, or it can try a different cell to grow from. The former tends to  create tight spirals of cells, and the latter tends to spread out more, at least until the maze hits the borders and runs out of places to go.</span>
+        </button>
+      </div>
+      <select name="onCollision">
+        <option value="differentDirection" selected>direction</option>
+        <option value="differentCell">cell</option>
+      </select><span class="select-arrows"></span>
+    </div>
+    <div class="group">
+      <div>
+        fork cell range:
+        <button type="button" class="tooltip" aria-label="Display tooltip">
+          <span class="tooltiptext">This is the hardest setting to explain and demonstrate! When the algorithm chooses to fork, it randomly selects from the list of previously added hallway cells based on this setting. The left end of the slider selects from only the most recently added hallways, and the right end selects from all available hallways. The left side of the slider tends to allow longer paths between the furthest points of the maze, whereas right side of the slider tends to cluster a bunch of branches around a hub.</span>
+        </button>
+      </div>
+      <input type="range" name="forkRange" min="0" max="1" step="0.01" value="0.2"/>
+    </div>
+    <div class="group">
+      <div>
+        Up/Down/Left/Right bias:
+        <button type="button" class="tooltip" aria-label="Display tooltip">
+          <span class="tooltiptext">The algorithm randomly chooses a direction to move from an existing cell to a new cell based on these preferences, if the direction is not already occupied by a previously added cell.</span>
+        </button>
+      </div>
+      <input type="range" name="up" min="0.01" max="1" step="0.01" value="1"/>
+      <input type="range" name="down" min="0.01" max="1" step="0.01" value="1"/>
+      <input type="range" name="left" min="0.01" max="1" step="0.01" value="1"/>
+      <input type="range" name="right" min="0.01" max="1" step="0.01" value="1"/>
+    </div>
+    <div class="group">
+      <div>
+        Download as:
+        <button type="button" class="tooltip" aria-label="Display tooltip">
+          <span class="tooltiptext">Choose a filename, then click a button to save this maze an an image or text file. You can also share a maze by copying and pasting the current URL at the top of your browser, because your settings are stored in the URL.</span>
+        </button>
+      </div>
+      <input type="text" id="fileName" size="12" placeholder="filename" value="maze"/>
+      <button type="button" id="pngButton">.png</button>
+      <button type="button" id="txtButton">.txt</button>
+    </div>
+  </form>
+  <h2>
+    Maze Algorithm
+  </h2>
+  <p>
+    These mazes are generated with an algorithm that is similar in principle to the <a href="http://weblog.jamisbuck.org/2011/1/27/maze-generation-growing-tree-algorithm">Growing Tree algorithm</a>.
+  </p>
+  <p>
+    The algorithm starts with a single cell. If you pause the algorithm animation, then press the "reset" button, you will see this cell alone. You can then press the "step" button repeatedly to watch the algorithm incrementally grow the maze by extending it into new cells.
+  </p>
+  <p>
+    There are different types of cells, distinguished by how many adjacent cells they connect to. A cell that has just been added to the maze is a "dead-end", meaning it only connects to the one adjacent cell that came before it. This cell can become connected to second adjacent cell, converting it into a "hall" or "path" cell between two other cells. Later, another branch may grow out of this cell, turning it into a "forked" cell. 
+  </p>
+  <p>
+    Whenever the algorithm is about to grow the maze, it randomly decides to either extend an existing dead-end into a path, or fork off from an existing path, with a probability based on the appropriate slider on this page. 
+  </p>
+  <p>
+    The algorithm keeps two hidden lists of cells that it can potentially grow from. The first list only contains dead-end cells, and the second list contains hall cells. When the algorithm has chosen to extend a dead-end, it takes the most recent available dead-end cell from the first list, adds a new dead-end cell next to it, and inserts the original cell into the second list since it is now a hall. When the algorithm has chosen to fork off from an existing path, it instead takes a random hall cell from the second list and starts a new branch from it by adding a dead-end cell next to it.
+  </p>
+  <p>
+    To grow out from existing cell, the algorithm has to decide which direction to grow in. The probabilities of each direction are weighted based on the corresponding sliders on this page. If all of the options are occupied, then the cell will be discarded from the lists and a different cell will be selected to grow from.
+  </p>
+  <p>
+    For more details, you can read the source code using either <a href="https://github.com/johnnesky/rainbowmazes/blob/main/index.html">github</a> or right-click -> "View Page Source".
+  </p>
+</div>
+
+<script>
+
+const UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3;
+const DIRECTIONS = [UP, DOWN, LEFT, RIGHT];
+const DIR_INVERSE = [DOWN, UP, RIGHT, LEFT];
+const DIR_FLAG = [1, 2, 4, 8]; // For bitwise operations.
+const DIR_XOFFSET = [0, 0, -1, 1];
+const DIR_YOFFSET = [-1, 1, 0, 0];
+
+let randomSeed = 0;
+const mazeSettingsForm = document.getElementById("mazeSettingsForm");
+let delayUntilNextSlide = 1;
+let animationTime = 0;
+const randomSeedButton = document.getElementById("randomSeedButton");
+const resetButton = document.getElementById("resetButton");
+const playButton = document.getElementById("playButton");
+const pauseButton = document.getElementById("pauseButton");
+const stepButton = document.getElementById("stepButton");
+const presetMenu = document.getElementById("presetMenu");
+const drawerTab = document.getElementById("drawerTab");
+const pngButton = document.getElementById("pngButton");
+const txtButton = document.getElementById("txtButton");
+let playing = true;
+
+let GRID_WIDTH;
+let GRID_HEIGHT;
+let DIR_WEIGHTS;
+let MAX_CELL_COUNT;
+let CELL_COUNT;
+let FORK_CHANCE;
+let FORK_RANGE;
+let TURN_WEIGHT;
+let turnAtCollisions;
+let minX;
+let minY;
+let maxX;
+let maxY;
+let hallCells;
+let leafCells;
+let map;
+let cellsLeftToAdd;
+let cellsAdded;
+
+// http://preshing.com/20121224/how-to-generate-a-sequence-of-unique-random-integers/
+// Seeded random number generator. Adapted to use ~26 bits, since Javascript only has 52 bits of mantissa and we need to multiply two numbers that use all available bits.
+const prime = 67108859;
+const prime2 = prime >>> 1;
+const permutationOffset = 1234567;
+const permutationBitExclusion = 0x5bf03635;
+function permuteQuadraticResidue(x) {
+  const residue = (x * x) % prime;
+  return ((x <= prime2) ? residue : prime - residue);
+}
+function randomUint() {
+  return permuteQuadraticResidue((permuteQuadraticResidue((randomSeed++) >>> 0) + permutationOffset) ^ permutationBitExclusion);
+}
+function random() {
+  return randomUint() / prime;
+}
+
+function mapAdd(cell) {
+  map[cell.x + "," + cell.y] = cell;
+}
+
+function mapGet(x, y) {
+  return map[x + "," + y];
+}
+
+function carve(cell, direction) {
+  const x = cell.x + DIR_XOFFSET[direction];
+  const y = cell.y + DIR_YOFFSET[direction];
+  minX = Math.min(minX, x);
+  minY = Math.min(minY, y);
+  maxX = Math.max(maxX, x);
+  maxY = Math.max(maxY, y);
+  const newCell = {x:x, y:y, flags: DIR_FLAG[DIR_INVERSE[direction]], exits: 1, hue: cell.hue + 1, order: cellsAdded};
+  cellsAdded++;
+  cell.flags |= DIR_FLAG[direction];
+  cell.exits++;
+  map[x + "," + y] = newCell;
+  const spaces = countSpaces(newCell);
+  if (spaces > 0) leafCells.push(newCell);
+}
+
+function outOfBounds(x, y) {
+  if (maxX - minX + 1 >= GRID_WIDTH) {
+    if (x < minX || x > maxX) return true;
+  }
+  if (maxY - minY + 1 >= GRID_HEIGHT) {
+    if (y < minY || y > maxY) return true;
+  }
+  return false;
+}
+
+function countSpaces(cell) {
+  let spaces = 0;
+  for (const direction of DIRECTIONS) {
+    const x = cell.x + DIR_XOFFSET[direction];
+    const y = cell.y + DIR_YOFFSET[direction];
+    if (mapGet(x, y) == undefined && !outOfBounds(x, y)) spaces++;
+  }
+  return spaces;
+}
+
+function tryCarveDirection(cell, direction) {
+  const x = cell.x + DIR_XOFFSET[direction];
+  const y = cell.y + DIR_YOFFSET[direction];
+  if (mapGet(x, y) != undefined) return false;
+  if (outOfBounds(x, y)) return false;
+  carve(cell, direction);
+  return true;
+}
+
+function tryCarve(cell, retry) {
+  const weights = DIR_WEIGHTS.concat();
+  let attempts = 0;
+  for (let i = 0; i < weights.length; i++) {
+    const direction = DIRECTIONS[i];
+    if (cell.flags & DIR_FLAG[DIR_INVERSE[direction]]) {
+      weights[i] *= 1.0 - TURN_WEIGHT;
+    } else {
+      weights[i] *= TURN_WEIGHT;
+    }
+    if (cell.flags & DIR_FLAG[direction]) {
+      weights[i] *= 0;
+    }
+    if (weights[i] > 0) {
+      attempts++;
+    }
+  }
+  for (let i = 0; i < attempts; i++) {
+    const sum = weights.reduce((a,b)=>a+b);
+    let picker = random() * sum;
+    for (let j = 0; j < weights.length; j++) {
+      picker -= weights[j];
+      if (picker < 0) {
+        const direction = DIRECTIONS[j];
+        weights[j] = 0;
+        if (tryCarveDirection(cell, direction)) return true;
+        if (!retry) return false;
+        break;
+      }
+    }
+  }
+  return false;
+}
+
+function carveLeaf(retry, tryLaterQueue) {
+  const cell = leafCells.pop();
+  const carved = tryCarve(cell, retry);
+  const spaces = countSpaces(cell);
+  if (spaces > 0) {
+    if (cell.exits <= 1) {
+      tryLaterQueue.unshift(cell);
+    } else if (cell.exits >= 2) {
+      hallCells.push(cell);
+    }
+  }
+  return carved;
+}
+
+function carveFork(retry, tryLaterQueue) {
+  const cellIndex = hallCells.length - ((random() * FORK_RANGE * hallCells.length) >>> 0) - 1;
+  const cell = hallCells[cellIndex];
+  hallCells.splice(cellIndex, 1);
+  const carved = tryCarve(cell, retry);
+  if (countSpaces(cell) > 0) {
+    // It's still technically possible to fork this cell again, but prefer not to.
+    tryLaterQueue.unshift(cell);
+  }
+  return carved;
+}
+
+function carveRepeatedly(fork, retry) {
+  const tryLaterQueue = [];
+  const queue = fork ? hallCells : leafCells;
+  let carved = false;
+  let attempts = queue.length;
+  while (attempts > -1 && queue.length > 0) {
+    if (fork) {
+      carved = carveFork(retry, tryLaterQueue);
+    } else {
+      carved = carveLeaf(retry, tryLaterQueue);
+    }
+    if (carved) break;
+    attempts--;
+  }
+  if (attempts <= -1) console.error("Made too many attempts!", attempts, queue.length);
+  Array.prototype.unshift.apply(queue, tryLaterQueue);
+  return carved;
+}
+
+function stepAlgorithm() {
+  if (hallCells.length == 0 && leafCells.length == 0) {
+    cellsLeftToAdd = 0;
+    return;
+  }
+
+  // TODO: predetermine fork sequence?
+  let fork = (random() < FORK_CHANCE);
+  let carved = false;
+
+  if (!turnAtCollisions) {
+    if (!carved) carved = carveRepeatedly(fork, false);
+    if (!carved) carved = carveRepeatedly(!fork, false);
+  }
+  if (!carved) carved = carveRepeatedly(fork, true);
+  if (!carved) carved = carveRepeatedly(!fork, true);
+  
+  if (!carved) console.log("Ran out of attempts without carving!");
+  
+  cellsLeftToAdd--;
+}
+
+function stepAnimation() {
+  const animationRate = Math.pow(1.0 - parseFloat(mazeSettingsForm.animationRate.value), 4.0);
+  animationTime += 0.01 / animationRate;
+  while (animationTime > 0 && cellsLeftToAdd > 0) {
+    stepAlgorithm();
+    animationTime--;
+  }
+  render();
+}
+
+function render() {
+  const hueShift = Math.pow(parseFloat(mazeSettingsForm.hueShift.value), 2.0) * 20;
+  const hueShiftType = mazeSettingsForm.hueType.value == "traversableDistance";
+  const lightness = parseFloat(mazeSettingsForm.lightness.value) * 100 + "%";
+  const cellSize = parseInt(mazeSettingsForm.cellSize.value);
+  const wallSize = parseInt(mazeSettingsForm.wallSize.value);
+  const tileSize = cellSize + wallSize;
+  const ctx = canvas.getContext("2d");
+  canvas.width = (maxX - minX + 1) * tileSize + wallSize;
+  canvas.height = (maxY - minY + 1) * tileSize + wallSize;
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (const key in map) {
+    const cell = map[key];
+    ctx.fillStyle = "hsl(" + ((hueShiftType ? cell.hue : cell.order) * hueShift) + ", 100%, " + lightness + ")";
+    ctx.fillRect((cell.x - minX) * tileSize + wallSize, (cell.y - minY) * tileSize + wallSize, cellSize, cellSize);
+    if (cell.flags & DIR_FLAG[DOWN]) ctx.fillRect((cell.x - minX) * tileSize + wallSize, (cell.y - minY + 1) * tileSize, cellSize, wallSize);
+    if (cell.flags & DIR_FLAG[RIGHT]) ctx.fillRect((cell.x - minX + 1) * tileSize, (cell.y - minY) * tileSize + wallSize, wallSize, cellSize);
+  }
+}
+
+function updateUrl() {
+  const params = {};
+  for (const input of mazeSettingsForm.elements) {
+    if (input.type == "number" || input.type == "range") {
+      let value = parseFloat(input.value);
+      if (input.hasAttribute("min")) {
+        value = Math.max(parseFloat(input.getAttribute("min")), value);
+      }
+      if (input.hasAttribute("max")) {
+        value = Math.min(parseFloat(input.getAttribute("max")), value);
+      }
+      if (value != parseFloat(input.value)) {
+        input.value = value;
+      }
+      if (isNaN(value)) value = 0;
+      if (input.name != "") params[input.name] = value;
+    } else {
+      if (input.name != "") params[input.name] = input.value;
+    }
+  }
+  
+  history.replaceState(null, "", "#" + new URLSearchParams(params).toString());
+  //console.log("Updated Maze URL: " + location.href);
+}
+
+function generate() {
+  updateUrl();
+  GRID_WIDTH = parseInt(mazeSettingsForm.gridWidth.value);
+  GRID_HEIGHT = parseInt(mazeSettingsForm.gridHeight.value);
+  DIR_WEIGHTS = [
+    parseFloat(mazeSettingsForm.up.value), 
+    parseFloat(mazeSettingsForm.down.value), 
+    parseFloat(mazeSettingsForm.left.value), 
+    parseFloat(mazeSettingsForm.right.value)
+  ];
+  MAX_CELL_COUNT = parseInt(mazeSettingsForm.maxCells.value);
+  CELL_COUNT = Math.min(MAX_CELL_COUNT, GRID_WIDTH * GRID_HEIGHT);
+  FORK_CHANCE = parseFloat(mazeSettingsForm.forkChance.value);
+  FORK_RANGE = parseFloat(mazeSettingsForm.forkRange.value);
+  TURN_WEIGHT = parseFloat(mazeSettingsForm.turnBias.value);
+  turnAtCollisions = mazeSettingsForm.onCollision.value == "differentDirection";
+  randomSeed = parseInt(document.getElementById("randomSeed").value);
+  delayUntilNextSlide = 1;
+  animationTime = 0;
+
+  seedCell = {x: 0, y: 0, flags: 0, exits: 0, hue: 0, order: 0};
+  minX = 0;
+  minY = 0;
+  maxX = 0;
+  maxY = 0;
+  hallCells = [];
+  leafCells = [seedCell];
+  map = {};
+  mapAdd(seedCell);
+  cellsLeftToAdd = CELL_COUNT - 1;
+  cellsAdded = 1;
+  
+  if (playing) {
+    stepAnimation();
+  } else {
+    render();
+  }
+}
+
+function randomizeSeed() {
+  const randomSeed = document.getElementById("randomSeed");
+  randomSeed.value = Math.floor(Math.random() * parseInt(randomSeed.max));
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  
+  if (!playing) return;
+  
+  stepAnimation();
+  if (cellsLeftToAdd <= 0) {
+    delayUntilNextSlide -= Math.pow(parseFloat(mazeSettingsForm.slideShowRate.value), 4.0) * 0.25;
+    if (delayUntilNextSlide <= 0) {
+      randomizeSeed();
+      generate();
+    }
+  }
+}
+
+function loadStateFromUrl() {
+  const params = new URLSearchParams(location.hash.slice(1));
+  for (const entry of params) {
+    const input = mazeSettingsForm[entry[0]];
+    if (input != undefined) input.value = entry[1];
+  }
+}
+
+window.addEventListener("hashchange", function() {
+  loadStateFromUrl();
+  generate();
+});
+
+mazeSettingsForm.addEventListener("input", function(event) {
+  if (event.target.type == "text") {
+    // Don't reset on editing the filename.
+  } else if (event.target == presetMenu) {
+    location.href = presetMenu.value;
+    loadStateFromUrl();
+    generate();
+  } else if (event.target.name == "animationRate" || event.target.name == "slideShowRate") {
+    updateUrl();
+  } else if (event.target.name == "hueShift" || event.target.name == "hueType" || event.target.name == "lightness" || event.target.name == "cellSize" || event.target.name == "wallSize") {
+    presetMenu.selectedIndex = 0;
+    updateUrl();
+    render();
+  } else {
+    presetMenu.selectedIndex = 0;
+    generate();
+  }
+});
+
+randomSeedButton.addEventListener("click", function() {
+  randomizeSeed();
+  generate();
+});
+
+resetButton.addEventListener("click", function() {
+  generate();
+});
+playButton.addEventListener("click", function() {
+  playing = !playing;
+});
+stepButton.addEventListener("click", function() {
+  stepAlgorithm();
+  render();
+});
+
+document.documentElement.addEventListener("keydown", function(event) {
+  if (event.target != null && event.target.tagName.toUpperCase() == "INPUT" && event.target.getAttribute("type").toUpperCase() == "TEXT")
+  {
+    return;
+  }
+  if (event.metaKey || event.ctrlKey) return;
+  switch (event.key.toUpperCase()) {
+    case " ": 
+      playing = !playing;
+      event.preventDefault();
+      break;
+    case "R": 
+      generate();
+      event.preventDefault();
+      break;
+    case "S": 
+      stepAlgorithm();
+      render();
+      break;
+  }
+});
+
+drawerTab.addEventListener("click", function() {
+  if (document.documentElement.classList.contains("closed-drawer")) {
+    document.documentElement.classList.remove("closed-drawer");
+  } else {
+    document.documentElement.classList.add("closed-drawer");
+  }
+});
+
+pngButton.addEventListener("click", function() {
+  const fileName = document.getElementById("fileName");
+  const dataUrl = canvas.toDataURL("image/png");
+  const anchor = document.createElement("a");
+  const url = dataUrl;
+  anchor.href = url;
+  anchor.download = fileName.value;
+  anchor.target = "_blank";
+  anchor.dispatchEvent(new MouseEvent("click"));
+});
+
+txtButton.addEventListener("click", function() {
+  let text = "Downloaded from: " + location.href + "\n";
+  
+  for (let y = minY; y <= maxY + 1; y++) {
+    for (let x = minX; x <= maxX + 1; x++) {
+      const cell = mapGet(x, y);
+      const above = mapGet(x, y-1);
+      const left = mapGet(x-1, y);
+      const aboveLeft = mapGet(x-1, y-1);
+      if (cell == undefined && above == undefined && left == undefined && aboveLeft == undefined) {
+        text += " ";
+      } else {
+        let flags = 0;
+        if (cell != undefined && (cell.flags & DIR_FLAG[UP]) == 0) flags |= 1;
+        if (above != undefined && (above.flags & DIR_FLAG[DOWN]) == 0) flags |= 1;
+        if (left != undefined && (left.flags & DIR_FLAG[UP]) == 0) flags |= 2;
+        if (aboveLeft != undefined && (aboveLeft.flags & DIR_FLAG[DOWN]) == 0) flags |= 2;
+        if (cell != undefined && (cell.flags & DIR_FLAG[LEFT]) == 0) flags |= 4;
+        if (left != undefined && (left.flags & DIR_FLAG[RIGHT]) == 0) flags |= 4;
+        if (above != undefined && (above.flags & DIR_FLAG[LEFT]) == 0) flags |= 8;
+        if (aboveLeft != undefined && (aboveLeft.flags & DIR_FLAG[RIGHT]) == 0) flags |= 8;
+        text += ' ═══║╔╗╦║╚╝╩║╠╣╬'.charAt(flags);
+      }
+      if (x > maxX) continue;
+      if (cell == undefined && above == undefined) {
+        text += "  ";
+      } else if (cell != undefined && cell.flags & DIR_FLAG[UP]) {
+        text += "  ";
+      } else if (above != undefined && above.flags & DIR_FLAG[DOWN]) {
+        text += "  ";
+      } else {
+        text += "══";
+      }
+    }
+    text += "\n";
+    if (y > maxY) continue;
+    for (let x = minX; x <= maxX + 1; x++) {
+      const cell = mapGet(x, y);
+      const left = mapGet(x-1, y);
+      if (cell == undefined && left == undefined) {
+        text += " ";
+      } else if (cell != undefined && cell.flags & DIR_FLAG[LEFT]) {
+        text += " ";
+      } else if (left != undefined && left.flags & DIR_FLAG[RIGHT]) {
+        text += " ";
+      } else {
+        text += "║";
+      }
+      if (x > maxX) continue;
+      if (cell == undefined) {
+        text += "..";
+      } else {
+        text += "  ";
+      }
+    }
+    text += "\n";
+  }
+  
+  const fileName = document.getElementById("fileName");
+  const dataUrl = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+  const anchor = document.createElement("a");
+  const url = dataUrl;
+  anchor.href = url;
+  anchor.download = fileName.value + ".txt";
+  anchor.target = "_blank";
+  anchor.dispatchEvent(new MouseEvent("click"));
+});
+
+if (location.hash != "") {
+  loadStateFromUrl();
+}
+requestAnimationFrame(animate);
+generate();
+
+/*
+todo:
+print updated maze url to console on change event?
+can I improve tooltip accessiblity? maybe with aria-live and javascript setting innerHTML?
+should I be using label elements?
+favicon
+export as gif? use gif.js?
+*/
+
+</script>

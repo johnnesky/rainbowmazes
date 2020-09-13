@@ -1,0 +1,1 @@
+Customizable maze generator. [Try it online!](https://rainbowmazes.com)
