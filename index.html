@@ -164,7 +164,24 @@
     pointer-events: none;
     position: absolute;
   }
-
+  
+  .donation form {
+    display: inline;
+  }
+  .donation input[type="submit"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    color: #7fd;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+  }
+  
   @media screen and (min-width: 601px) {
     .closed-drawer .settings-column {
       margin-left: -18em;
@@ -506,6 +523,16 @@
   <p>
     For more details, you can read the source code using either <a href="https://github.com/johnnesky/rainbowmazes/blob/main/index.html">github</a> or right-click -> "View Page Source".
   </p>
+  <div class="donation">
+    Rainbow Mazes was developed by <a href="https://johnnesky.com/">John Nesky</a>. If you find it valuable and have the means, any gratuity via
+    <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+      <input type="hidden" name="cmd" value="_donations">
+      <input type="hidden" name="business" value="QZJTX9GRYEV9N">
+      <input type="hidden" name="currency_code" value="USD">
+      <input type="submit" name="submit" value="Paypal">
+    </form>
+    would be appreciated!
+  </div>
 </div>
 
 <script>
