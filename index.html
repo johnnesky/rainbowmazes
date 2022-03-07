@@ -309,7 +309,9 @@
       <div>
         random seed:
         <button type="button" class="tooltip" aria-label="Display tooltip">
-          <span class="tooltiptext">Determines the outcome of the algorithm's random choices. You can regenerate the same maze if the seed and other settings are preserved, or generate a new maze with the same settings by changing the seed.</span>
+          <span class="tooltiptext">
+            This random seed determines the outcome of the algorithm's random choices. You can regenerate the same maze if the seed and other settings are preserved, or generate a new maze with the same settings by changing the seed.
+          </span>
         </button>
       </div>
       <input type="number" name="randomSeed" id="randomSeed" min="0" max="10000000" step="1" value="1234567"/>
@@ -319,7 +321,9 @@
       <div>
         animation controls:
         <button type="button" class="tooltip" aria-label="Display tooltip">
-          <span class="tooltiptext">The maze generation algorithm can be paused, reset, or incrementally advanced.<br/>Keyboard shortcuts:<br/>R=reset <br/>Space=play/pause<br/>S = step</span>
+          <span class="tooltiptext">
+            The maze generation algorithm can be paused, reset, or incrementally advanced.<br/>Keyboard shortcuts:<table style="margin: auto;"><tr><td style="text-align: right;">R:</td><td>reset</td></tr><tr><td style="text-align: right;">Space:</td><td>play/pause</td></tr><tr><td style="text-align: right;">S:</td><td>step</td></tr></table>
+          </span>
         </button>
       </div>
       <button type="button" id="resetButton">reset</button>
@@ -330,16 +334,20 @@
       <div>
         animation rate:
         <button type="button" class="tooltip" aria-label="Display tooltip">
-          <span class="tooltiptext">How fast the maze algorithm adds cells to the maze. Drag all the way to the right to instantly finish the maze.</span>
+          <span class="tooltiptext">
+            How quickly the maze algorithm adds cells to the maze. Drag all the way to the right to instantly finish the maze.
+          </span>
         </button>
       </div>
       <input type="range" name="animationRate" min="0" max="1" step="0.01" value="0.7"/>
     </div>
     <div class="group">
       <div>
-        slide show rate:
+        slideshow rate:
         <button type="button" class="tooltip" aria-label="Display tooltip">
-          <span class="tooltiptext">Periodically generates new mazes by changing the random seed. Waits a certain amount of time after completing the last maze before starting the next one based on this slider. Drag all the way to the left to stop the slideshow.</span>
+          <span class="tooltiptext">
+            This tool periodically generates new mazes by changing the random seed, waiting a certain amount of time after completing the last maze before starting the next one based on this slider. Drag all the way to the left to stop the slideshow.
+          </span>
         </button>
       </div>
       <input type="range" name="slideShowRate" min="0" max="1" step="0.01" value="0"/>
@@ -348,7 +356,9 @@
       <div>
         presets:
         <button type="button" class="tooltip" aria-label="Display tooltip">
-          <span class="tooltiptext">Check out some maze configurations selected by the developer.</span>
+          <span class="tooltiptext">
+            Check out some maze configurations curated by the developer!
+          </span>
         </button>
       </div>
       <select id="presetMenu">
@@ -374,13 +384,17 @@
         <option value="#gridWidth=64&gridHeight=64&maxCells=2000&cellSize=9&wallSize=1&hueShift=0.07&hueType=cellCreationOrder&lightness=0.75&forkChance=0.08&turnBias=0.01&onCollision=differentCell&forkRange=0&up=1&down=1&left=1&right=1">windows</option>
         <option value="#gridWidth=64&gridHeight=64&maxCells=9999&cellSize=10&wallSize=0&hueShift=0.08&hueType=cellCreationOrder&lightness=0.74&forkChance=1&turnBias=0.99&onCollision=differentDirection&forkRange=0&up=1&down=1&left=1&right=1">still life</option>
         <option value="#gridWidth=30&gridHeight=30&maxCells=400&cellSize=18&wallSize=2&hueShift=0.2&hueType=cellCreationOrder&lightness=0.68&forkChance=0.1&turnBias=0.13&onCollision=differentCell&forkRange=1&up=0.68&down=0.68&left=1&right=1">metroid 1</option>
+        <option value="#gridWidth=32&gridHeight=32&maxCells=9999&cellSize=16&wallSize=4&hueShift=0.24&hueType=cellCreationOrder&lightness=0.76&forkChance=0&turnBias=0.01&onCollision=differentCell&forkRange=0.04&up=1&down=0.01&left=0.32&right=0.32">switchboard</option>
+        <option value="#gridWidth=32&gridHeight=32&maxCells=9999&cellSize=16&wallSize=4&hueShift=0.38&hueType=cellCreationOrder&lightness=0.76&forkChance=0&turnBias=0.01&onCollision=differentCell&forkRange=1&up=1&down=0.01&left=0.32&right=0.32">rubber band ball</option>
       </select><span class="select-arrows"></span>
     </div>
     <div class="group">
       <div>
         max grid width/height:
         <button type="button" class="tooltip" aria-label="Display tooltip">
-          <span class="tooltiptext">The maximum number cells across and down the maze. The maze may be smaller if not enough cells were added.</span>
+          <span class="tooltiptext">
+            The maximum cell length across and down the maze. (The maze might not reach the maximum dimensions if not enough cells are added to fill that space.)
+          </span>
         </button>
       </div>
       <input type="number" name="gridWidth" min="0" max="10000" step="1" value="32"/>
@@ -390,7 +404,9 @@
       <div>
         max cell count:
         <button type="button" class="tooltip" aria-label="Display tooltip">
-          <span class="tooltiptext">The maximum number cells to add to the maze. If this is larger than width ✕ height, then the maze will be completely filled.</span>
+          <span class="tooltiptext">
+            The maximum number of cells to add to the maze. If this is larger than width ✕ height, then the maze will be completely filled.
+          </span>
         </button>
       </div>
       <input type="number" name="maxCells" min="0" max="100000" step="1" value="9999"/>
@@ -399,7 +415,9 @@
       <div>
         cell/wall pixel size:
         <button type="button" class="tooltip" aria-label="Display tooltip">
-          <span class="tooltiptext">The number of pixels across to draw cell interiors and walls.</span>
+          <span class="tooltiptext">
+            The number of pixels across to draw cell interiors and walls.
+          </span>
         </button>
       </div>
       <input type="number" name="cellSize" min="0" max="64" step="1" value="18"/>
@@ -409,7 +427,9 @@
       <div>
         hue shift rate:
         <button type="button" class="tooltip" aria-label="Display tooltip">
-          <span class="tooltiptext">Each cell's interior color is slightly hue-shifted by this much from the previous cell, forming a rainbow based on distance from the inital cell.</span>
+          <span class="tooltiptext">
+            Each cell's interior color is slightly hue-shifted by this much from the previous cell, forming a rainbow based on distance from the first cell.
+          </span>
         </button>
       </div>
       <input type="range" name="hueShift" min="0" max="1" step="0.01" value=".5"/>
@@ -418,7 +438,9 @@
       <div>
         hue shift type:
         <button type="button" class="tooltip" aria-label="Display tooltip">
-          <span class="tooltiptext">Determines how cells are shaded, either based on traversable distance from the seed node, or the order in which the cells were created.</span>
+          <span class="tooltiptext">
+            Determines how cells are shaded, either based on traversable distance from the first cell, or the order in which the cells were created.
+          </span>
         </button>
       </div>
       <select name="hueType">
@@ -430,7 +452,9 @@
       <div>
         lightness:
         <button type="button" class="tooltip" aria-label="Display tooltip">
-          <span class="tooltiptext">The lightness of each cell interior, ranging from black to colorful to white.</span>
+          <span class="tooltiptext">
+            The lightness of each cell interior, ranging from black to colorful to white.
+          </span>
         </button>
       </div>
       <input type="range" name="lightness" min="0" max="1" step="0.01" value=".75"/>
@@ -439,7 +463,9 @@
       <div>
         extend vs fork probability:
         <button type="button" class="tooltip" aria-label="Display tooltip">
-          <span class="tooltiptext">Every time the maze generation algorithm is ready to add another cell, it randomly chooses to extend the most recently added dead-end, or fork off from a previous path, based on this setting. The left end of the slider creates long hallways, and the middle and right end create many short dead-ends.</span>
+          <span class="tooltiptext">
+            Every time the maze generation algorithm is ready to add new cell, it randomly chooses to either extend the most recent dead-end into a longer path, or fork off a new dead-end from an earlier path based on this setting. The left end of the slider creates long paths, and the middle and right end create many short dead-ends.
+          </span>
         </button>
       </div>
       <input type="range" name="forkChance" min="0" max="1" step="0.01" value="0.1"/>
@@ -448,7 +474,9 @@
       <div>
         extend turn bias:
         <button type="button" class="tooltip" aria-label="Display tooltip">
-          <span class="tooltiptext">The maze generation algorithm can prefer to form straight lines or tight squiggles based on this setting. (This has no effect while the algorithm is forking a path.)</span>
+          <span class="tooltiptext">
+            The maze generation algorithm can prefer to form straight lines or tight squiggles based on this setting. (This has no effect while the algorithm is forking a path.)
+          </span>
         </button>
       </div>
       <input type="range" name="turnBias" min="0.01" max="0.99" step="0.01" value="0.15"/>
@@ -458,7 +486,8 @@
         on collision, try a different:
         <button type="button" class="tooltip" aria-label="Display tooltip">
           <span class="tooltiptext">
-          If the algorithm tries to grow from a cell toward a space that is already occupied, it has to stop and try something else. It can either try a different space next to the same cell, or it can try a different cell to grow from. The former tends to  create tight spirals of cells, and the latter tends to spread out more, at least until the maze hits the borders and runs out of places to go.</span>
+            If the algorithm tries to grow from a cell toward a space that is already occupied, it has to stop and try something else. It can either try a different space next to the same cell, or it can choose a different cell to grow from. The former tends to create tight spirals of cells, and the latter tends to spread out more, at least until the maze hits the borders and runs out of places to go.
+          </span>
         </button>
       </div>
       <select name="onCollision">
@@ -470,7 +499,9 @@
       <div>
         fork cell range:
         <button type="button" class="tooltip" aria-label="Display tooltip">
-          <span class="tooltiptext">This is the hardest setting to explain and demonstrate! When the algorithm chooses to fork, it randomly selects from the list of previously added hallway cells based on this setting. The left end of the slider selects from only the most recently added hallways, and the right end selects from all available hallways. The left side of the slider tends to allow longer paths between the furthest points of the maze, whereas right side of the slider tends to cluster a bunch of branches around a hub.</span>
+          <span class="tooltiptext">
+            This is the hardest setting to explain and demonstrate! When the algorithm chooses to fork, it randomly selects from the list of existing path cells based on this setting. Drag the slider to the left to only select from the most recently added path cells, or drag the slider to the right to select any of the available path cells. The left side of the slider tends to result in longer distances between the furthest points of the maze, whereas right side of the slider tends to cluster a bunch of branches around a hub.
+          </span>
         </button>
       </div>
       <input type="range" name="forkRange" min="0" max="1" step="0.01" value="0.2"/>
@@ -479,7 +510,9 @@
       <div>
         Up/Down/Left/Right bias:
         <button type="button" class="tooltip" aria-label="Display tooltip">
-          <span class="tooltiptext">The algorithm randomly chooses a direction to move from an existing cell to a new cell based on these preferences, if the direction is not already occupied by a previously added cell.</span>
+          <span class="tooltiptext">
+          The algorithm randomly chooses a direction to move from an existing cell to a new cell based on these preferences, if the direction is not already occupied by a previously added cell.
+          </span>
         </button>
       </div>
       <input type="range" name="up" min="0.01" max="1" step="0.01" value="1"/>
@@ -491,10 +524,12 @@
       <div>
         Download as:
         <button type="button" class="tooltip" aria-label="Display tooltip">
-          <span class="tooltiptext">Choose a filename, then click a button to save this maze an an image or text file. You can also share a maze by copying and pasting the current URL at the top of your browser, because your settings are stored in the URL.</span>
+          <span class="tooltiptext">
+            Choose a filename, then click a button to save this maze as an image or text file. You can also share a maze by copying and pasting the current URL at the top of your browser, because your settings are stored in the URL.
+          </span>
         </button>
       </div>
-      <input type="text" id="fileName" size="12" placeholder="filename" value="maze"/>
+      <input type="text" id="fileName" size="12" placeholder="filename" value="rainbowmaze"/>
       <button type="button" id="pngButton">.png</button>
       <button type="button" id="txtButton">.txt</button>
     </div>
@@ -509,16 +544,16 @@
     The algorithm starts with a single cell. If you pause the algorithm animation, then press the "reset" button, you will see this cell alone. You can then press the "step" button repeatedly to watch the algorithm incrementally grow the maze by extending it into new cells.
   </p>
   <p>
-    There are different types of cells, distinguished by how many adjacent cells they connect to. A cell that has just been added to the maze is a "dead-end", meaning it only connects to the one adjacent cell that came before it. This cell can become connected to second adjacent cell, converting it into a "hall" or "path" cell between two other cells. Later, another branch may grow out of this cell, turning it into a "forked" cell. 
+    There are different types of cells, distinguished by how many adjacent cells they connect to. A cell that has just been added to the maze is a "dead-end", meaning it only connects to the one adjacent cell that came before it. Later, this cell can become connected to a second adjacent cell, converting it into a "path" cell between two other cells. Later, another branch may grow out of this cell, turning it into a "forked" cell.
   </p>
   <p>
-    Whenever the algorithm is about to grow the maze, it randomly decides to either extend an existing dead-end into a path, or fork off from an existing path, with a probability based on the appropriate slider on this page. 
+    Whenever the algorithm is about to grow the maze, it randomly decides to either extend an existing dead-end into a path, or fork off a new dead-end from an existing path, with a probability based on the appropriate slider on this page.
   </p>
   <p>
-    The algorithm keeps two hidden lists of cells that it can potentially grow from. The first list only contains dead-end cells, and the second list contains hall cells. When the algorithm has chosen to extend a dead-end, it takes the most recent available dead-end cell from the first list, adds a new dead-end cell next to it, and inserts the original cell into the second list since it is now a hall. When the algorithm has chosen to fork off from an existing path, it instead takes a random hall cell from the second list and starts a new branch from it by adding a dead-end cell next to it.
+    The algorithm keeps two hidden lists of cells that it can potentially grow from. The first list only contains dead-end cells, and the second list contains path cells. When the algorithm has chosen to extend a dead-end, it takes the most recent available dead-end cell from the first list, adds a new dead-end cell next to it, and inserts the original cell into the second list since it is now a path cell. When the algorithm has chosen to fork off from an existing path, it instead takes a random path cell from the second list and starts a new branch from it by adding a dead-end cell next to it.
   </p>
   <p>
-    To grow out from existing cell, the algorithm has to decide which direction to grow in. The probabilities of each direction are weighted based on the corresponding sliders on this page. If all of the options are occupied, then the cell will be discarded from the lists and a different cell will be selected to grow from.
+    After choosing a cell to grow from, the algorithm has to decide which direction to grow in. The probabilities of each available direction are weighted based on the corresponding sliders on this page. If none of the adjacent spaces are available, then the chosen cell will be discarded from the lists and a different cell will be selected to grow from instead.
   </p>
   <p>
     For more details, you can read the source code using either <a href="https://github.com/johnnesky/rainbowmazes/blob/main/index.html">github</a> or right-click -> "View Page Source".
@@ -572,7 +607,7 @@ let minX;
 let minY;
 let maxX;
 let maxY;
-let hallCells;
+let pathCells;
 let leafCells;
 let map;
 let cellsLeftToAdd;
@@ -690,16 +725,16 @@ function carveLeaf(retry, tryLaterQueue) {
     if (cell.exits <= 1) {
       tryLaterQueue.unshift(cell);
     } else if (cell.exits >= 2) {
-      hallCells.push(cell);
+      pathCells.push(cell);
     }
   }
   return carved;
 }
 
 function carveFork(retry, tryLaterQueue) {
-  const cellIndex = hallCells.length - ((random() * FORK_RANGE * hallCells.length) >>> 0) - 1;
-  const cell = hallCells[cellIndex];
-  hallCells.splice(cellIndex, 1);
+  const cellIndex = pathCells.length - ((random() * FORK_RANGE * pathCells.length) >>> 0) - 1;
+  const cell = pathCells[cellIndex];
+  pathCells.splice(cellIndex, 1);
   const carved = tryCarve(cell, retry);
   if (countSpaces(cell) > 0) {
     // It's still technically possible to fork this cell again, but prefer not to.
@@ -710,7 +745,7 @@ function carveFork(retry, tryLaterQueue) {
 
 function carveRepeatedly(fork, retry) {
   const tryLaterQueue = [];
-  const queue = fork ? hallCells : leafCells;
+  const queue = fork ? pathCells : leafCells;
   let carved = false;
   let attempts = queue.length;
   while (attempts > -1 && queue.length > 0) {
@@ -728,7 +763,7 @@ function carveRepeatedly(fork, retry) {
 }
 
 function stepAlgorithm() {
-  if (hallCells.length == 0 && leafCells.length == 0) {
+  if (pathCells.length == 0 && leafCells.length == 0) {
     cellsLeftToAdd = 0;
     return;
   }
@@ -830,7 +865,7 @@ function generate() {
   minY = 0;
   maxX = 0;
   maxY = 0;
-  hallCells = [];
+  pathCells = [];
   leafCells = [seedCell];
   map = {};
   mapAdd(seedCell);
@@ -1029,7 +1064,6 @@ generate();
 
 /*
 todo:
-print updated maze url to console on change event?
 can I improve tooltip accessiblity? maybe with aria-live and javascript setting innerHTML?
 should I be using label elements?
 favicon
